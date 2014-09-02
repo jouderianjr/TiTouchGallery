@@ -1,5 +1,24 @@
 # TiTouchGallery Module
 
+##Weird Update(by Me)! :D
+
+So, now you can pass a customView, for be in the last position.
+
+    var proxy = titouchgallery.createTouchGallery({
+        images: [
+            "http://cs407831.userapi.com/v407831207/18f6/jBaVZFDhXRA.jpg",
+            "http://cs407831.userapi.com/v407831207/190e/2Sz9A774hUc.jpg",
+            "http://cs407831.userapi.com/v407831207/191e/QEQE83Ok0lQ.jpg"
+        ],
+        customView: YOU_BEAUTIFUL_VIEW_HERE
+    });
+
+So, you will have 3 photos and the customView! And with you use scroll event in javascript you will receive the string "customView"!
+
+Try it(if you need of course, it's a very specific case for use, but, who knows :D)! 
+
+(Get the module in dist folder)
+
 ## Description
 
 TiTouchGallery is a native Android module, which allows you to create a gallery view, with zoom (pinch / double tap) and pan support, in your Titanium Android app.

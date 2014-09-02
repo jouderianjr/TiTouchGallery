@@ -63,7 +63,7 @@ public class BasePagerAdapter extends PagerAdapter {
     @Override
     public int getCount()
     {
-        return mResources.size();
+        return (mResources.size()+1);
     }
 
     @Override

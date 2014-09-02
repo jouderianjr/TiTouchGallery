@@ -18,36 +18,58 @@
 package ru.truba.touchgallery.GalleryWidget;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import ru.truba.touchgallery.TouchView.UrlTouchImageView;
 
 import java.util.List;
 
+import org.appcelerator.titanium.proxy.TiViewProxy;
+
 
 /**
  Class wraps URLs to adapter, then it instantiates {@link UrlTouchImageView} objects to paging up through them.
  */
 public class UrlPagerAdapter extends BasePagerAdapter {
+	View customView;
 
     public UrlPagerAdapter(Context context, List<String> resources)
 	{
 		super(context, resources);
 	}
 
+    public UrlPagerAdapter(Context context, List<String> resources, View customView){
+		super(context, resources);
+		this.customView = customView;
+	}
+    
     @Override
     public void setPrimaryItem(ViewGroup container, int position, Object object) {
         super.setPrimaryItem(container, position, object);
-        ((GalleryViewPager)container).mCurrentView = ((UrlTouchImageView)object).getImageView();
+        if( object instanceof UrlTouchImageView){
+            ((GalleryViewPager)container).mCurrentView = ((UrlTouchImageView)object).getImageView();        	
+        }
     }
 
     @Override
     public Object instantiateItem(ViewGroup collection, int position){
-        final UrlTouchImageView iv = new UrlTouchImageView(mContext);
-        iv.setUrl(mResources.get(position));
-        iv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        
-        collection.addView(iv, 0);
-        return iv;
+    	if( position < this.getCount() - 1 ){
+            final UrlTouchImageView iv = new UrlTouchImageView(mContext);
+            iv.setUrl(mResources.get(position));
+            iv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            
+            collection.addView(iv, 0);
+            return iv;    		
+
+    		
+    	}else{
+    		collection.addView(customView,0);
+    		return customView;    			
+    	}
+    }
+    
+    public void setCustomView(View view){
+    	this.customView = view;
     }
 }

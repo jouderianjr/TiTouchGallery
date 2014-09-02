@@ -5,18 +5,23 @@
 
  package com.gbaldera.titouchgallery;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewPropertyAnimator;
 import android.widget.LinearLayout;
+
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollProxy;
 import org.appcelerator.titanium.TiC;
 import org.appcelerator.titanium.proxy.TiViewProxy;
 import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.titanium.view.TiUIView;
+
 import ru.truba.touchgallery.GalleryWidget.BasePagerAdapter;
 import ru.truba.touchgallery.GalleryWidget.GalleryViewPager;
 import ru.truba.touchgallery.GalleryWidget.UrlPagerAdapter;
@@ -38,6 +43,8 @@ public class TouchGalleryView extends TiUIView {
 
     private int mCurIndex;
 
+    private View customView;
+    
     public TouchGalleryView(TiViewProxy proxy) {
         super(proxy);
         mProxy = (TouchGalleryProxy) proxy;
@@ -59,17 +66,17 @@ public class TouchGalleryView extends TiUIView {
         });
 
         images = new ArrayList<String>();
-
+        
         ViewPager.LayoutParams viewPagerLayoutParams = new ViewPager.LayoutParams();
         viewPagerLayoutParams.width = ViewPager.LayoutParams.MATCH_PARENT;
         viewPagerLayoutParams.height = ViewPager.LayoutParams.MATCH_PARENT;
 
-        mAdapter = new UrlPagerAdapter(mContainer.getContext(), images);
+        mAdapter = new UrlPagerAdapter(mContainer.getContext(), images, customView);
         mPager = buildPager(mContainer.getContext(), mAdapter);
         mCurIndex = mAdapter.getCurrentPosition();
 
         mContainer.addView(mPager, viewPagerLayoutParams);
-
+                
         setNativeView(mContainer);
     }
 
@@ -82,8 +89,7 @@ public class TouchGalleryView extends TiUIView {
             @Override
             public void onItemChange(int currentPosition) {
                 mCurIndex = currentPosition;
-                mProxy.fireScroll(currentPosition, images.get(currentPosition));
-                Log.d(TAG, "Current item is " + currentPosition);
+                mProxy.fireScroll(currentPosition, "customView");
             }
         });
         pager.setAdapter(adapter);
@@ -110,7 +116,11 @@ public class TouchGalleryView extends TiUIView {
                 setCurrentPage(page);
             }
         }
-
+        if(d.containsKey("customView")){
+            customView = ((TiViewProxy) d.get("customView")).getOrCreateView().getNativeView();
+            mAdapter.setCustomView(customView);
+        }
+        
         super.processProperties(d);
     }
 
@@ -182,20 +192,16 @@ public class TouchGalleryView extends TiUIView {
         scrollTo(view);
     }
 
-    public void moveNext()
-    {
+    public void moveNext(){
         move(mCurIndex + 1);
     }
 
-    public void movePrevious()
-    {
+    public void movePrevious(){
         move(mCurIndex - 1);
     }
 
-    private void move(int index)
-    {
-        if (index < 0 || index >= images.size()) {
-            Log.w(TAG, "Request to move to index " + index + " ignored, as it is out-of-bounds.");
+    private void move(int index){
+        if (index < 0 || index >= images.size() + 1) {
             return;
         }
         mCurIndex = index;
