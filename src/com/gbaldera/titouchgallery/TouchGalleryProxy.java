@@ -6,6 +6,7 @@
  package com.gbaldera.titouchgallery;
 
 import android.app.Activity;
+
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.titanium.TiC;
@@ -48,9 +49,13 @@ public class TouchGalleryProxy extends TiViewProxy {
     }
 
     @Kroll.setProperty @Kroll.method
-    public void setCurrentPage(Object page)
-    {
-        getView().setCurrentPage(page);
+    public void setCurrentPage(final Object page){
+    	this.getActivity().runOnUiThread(new Runnable() {			
+			@Override
+			public void run() {
+		        getView().setCurrentPage(page);
+			}
+		});
     }
 
     @Kroll.method
@@ -72,31 +77,48 @@ public class TouchGalleryProxy extends TiViewProxy {
     }
 
     @Kroll.setProperty @Kroll.method
-    public void setImages(Object urls)
-    {
-        getView().setImages(urls);
+    public void setImages(final Object urls){
+    	this.getActivity().runOnUiThread(new Runnable() {			
+			@Override
+			public void run() {
+		    	getView().setImages(urls);
+			}
+		});
+    
+    }
+
+    @Kroll.setProperty @Kroll.method
+    public void setImages(final Object urls, final int currentPage){
+    	this.getActivity().runOnUiThread(new Runnable() {			
+			@Override
+			public void run() {
+		    	getView().setImages(urls, currentPage);
+			}
+		});
+    
     }
 
     @Kroll.method
-    public void addImage(String url)
-    {
-        getView().addImage(url);
+    public void addImage(final String url){
+    	this.getActivity().runOnUiThread(new Runnable() {			
+			@Override
+			public void run() {
+		        getView().addImage(url);			 	
+			}
+		});
     }
 
     @Kroll.method
-    public void removeImage(String url)
-    {
+    public void removeImage(String url){
         getView().removeImage(url);
     }
 
     @Kroll.method
-    public int getCount()
-    {
+    public int getCount(){
         return getView().getCount();
     }
 
-    public void fireScroll(int currentPage, String currentURL)
-    {
+    public void fireScroll(int currentPage, String currentURL){
         if (hasListeners(TiC.EVENT_SCROLL)) {
             KrollDict options = new KrollDict();
             options.put("url", currentURL);

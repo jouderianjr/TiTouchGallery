@@ -83,13 +83,18 @@ public class TouchGalleryView extends TiUIView {
     protected GalleryViewPager buildPager(Context context, UrlPagerAdapter adapter)
     {
         GalleryViewPager pager = new GalleryViewPager(context);
-        pager.setOffscreenPageLimit(3);
-
+        pager.setOffscreenPageLimit(0);
+        
         adapter.setOnItemChangeListener(new BasePagerAdapter.OnItemChangeListener() {
             @Override
             public void onItemChange(int currentPosition) {
                 mCurIndex = currentPosition;
-                mProxy.fireScroll(currentPosition, "customView");
+                
+                if(images.size() == currentPosition){
+                     mProxy.fireScroll(currentPosition, "customView");                	
+                }else{
+                	mProxy.fireScroll(currentPosition, images.get(currentPosition));                	
+                }
             }
         });
         pager.setAdapter(adapter);
@@ -98,8 +103,7 @@ public class TouchGalleryView extends TiUIView {
     }
 
     @Override
-    public void setProxy(TiViewProxy proxy)
-    {
+    public void setProxy(TiViewProxy proxy){
         super.setProxy(proxy);
         mProxy = (TouchGalleryProxy) proxy;
     }
@@ -125,9 +129,7 @@ public class TouchGalleryView extends TiUIView {
     }
 
     @Override
-    public void propertyChanged(String key, Object oldValue, Object newValue,
-                                KrollProxy proxy)
-    {
+    public void propertyChanged(String key, Object oldValue, Object newValue, KrollProxy proxy){
         if (TiC.PROPERTY_CURRENT_PAGE.equals(key)) {
             setCurrentPage(TiConvert.toInt(newValue));
         } else {
@@ -135,7 +137,7 @@ public class TouchGalleryView extends TiUIView {
         }
     }
 
-    public void setImages(Object images) {
+    public void setImages(Object images){
 
         boolean changed = false;
         this.images.clear();
@@ -159,13 +161,34 @@ public class TouchGalleryView extends TiUIView {
         }
     }
 
-    public List<String> getImages()
-    {
+    public void setImages(Object images, int currentPage) {
+    	Log.e("SetIMAgeView", "CurrentPage ="+currentPage);
+
+        boolean changed = false;
+        this.images.clear();
+
+        if(images instanceof Object[])
+        {
+            Object[] urls = (Object[])images;            
+            for (Object url1 : urls) {
+                if (url1 instanceof String) {
+                    String url = (String) url1;
+                    this.images.add(url);
+                    changed = true;
+                }else{
+                }
+            }
+        }
+        mAdapter.notifyDataSetChanged();
+        setCurrentPage(currentPage);
+        mPager.setAdapter(mAdapter);
+    }
+    
+    public List<String> getImages(){
         return images;
     }
 
-    public void addImage(String url)
-    {
+    public void addImage(String url){
         if (!images.contains(url)) {
             images.add(url);
             getProxy().setProperty(TiC.PROPERTY_IMAGES, images.toArray());
@@ -173,8 +196,7 @@ public class TouchGalleryView extends TiUIView {
         }
     }
 
-    public void removeImage(String url)
-    {
+    public void removeImage(String url){
         if (images.contains(url)) {
             images.remove(url);
             getProxy().setProperty(TiC.PROPERTY_IMAGES, images.toArray());
@@ -182,13 +204,11 @@ public class TouchGalleryView extends TiUIView {
         }
     }
 
-    public int getCurrentPage()
-    {
+    public int getCurrentPage(){
         return mCurIndex;
     }
 
-    public void setCurrentPage(Object view)
-    {
+    public void setCurrentPage(Object view){
         scrollTo(view);
     }
 
@@ -201,29 +221,28 @@ public class TouchGalleryView extends TiUIView {
     }
 
     private void move(int index){
-        if (index < 0 || index >= images.size() + 1) {
-            return;
+        if (index < 0 || index >= this.images.size() + 1) {
+        	//            return;
         }
         mCurIndex = index;
         mPager.setCurrentItem(index);
+
+        mAdapter.notifyDataSetChanged();
+        
     }
 
-    public void scrollTo(Object view)
-    {
+    public void scrollTo(Object view){
         if (view instanceof Number) {
             move(((Number) view).intValue());
         }
     }
 
-    public int getCount()
-    {
+    public int getCount(){
         return mAdapter.getCount();
     }
 
-    public class GestureListener extends GestureDetector.SimpleOnGestureListener
-    {
-        private KrollDict getEventData(MotionEvent event)
-        {
+    public class GestureListener extends GestureDetector.SimpleOnGestureListener{
+        private KrollDict getEventData(MotionEvent event){
             int index = getCurrentPage();
 
             KrollDict data = dictFromEvent(event);
@@ -234,9 +253,7 @@ public class TouchGalleryView extends TiUIView {
         }
 
         @Override
-        public boolean onSingleTapConfirmed(MotionEvent event) {
-            Log.d(TAG, "TAP on " + mProxy);
-
+        public boolean onSingleTapConfirmed(MotionEvent event){
             if (mProxy.hasListeners(TiC.EVENT_SINGLE_TAP)) {
                 mProxy.fireEvent(TiC.EVENT_SINGLE_TAP, getEventData(event));
             }
@@ -245,18 +262,14 @@ public class TouchGalleryView extends TiUIView {
         }
 
         @Override
-        public void onLongPress(MotionEvent event)
-        {
-            Log.d(TAG, "LONGPRESS on " + mProxy);
-
+        public void onLongPress(MotionEvent event){
             if (mProxy.hasListeners(TiC.EVENT_LONGPRESS)) {
                 mProxy.fireEvent(TiC.EVENT_LONGPRESS, getEventData(event));
             }
         }
 
         @Override
-        public boolean onDown(MotionEvent event)
-        {
+        public boolean onDown(MotionEvent event){
             return false;
         }
     }

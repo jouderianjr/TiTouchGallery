@@ -20,6 +20,7 @@ package ru.truba.touchgallery.GalleryWidget;
 import android.content.Context;
 import android.os.Parcelable;
 import android.support.v4.view.PagerAdapter;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -61,8 +62,7 @@ public class BasePagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public int getCount()
-    {
+    public int getCount(){
         return (mResources.size()+1);
     }
 

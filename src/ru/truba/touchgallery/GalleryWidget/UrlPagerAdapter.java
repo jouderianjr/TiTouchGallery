@@ -60,9 +60,7 @@ public class UrlPagerAdapter extends BasePagerAdapter {
             iv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             
             collection.addView(iv, 0);
-            return iv;    		
-
-    		
+            return iv;    		    		
     	}else{
     		collection.addView(customView,0);
     		return customView;    			
