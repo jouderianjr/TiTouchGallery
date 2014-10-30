@@ -53,8 +53,24 @@ public class UrlPagerAdapter extends BasePagerAdapter {
     }
 
     @Override
-    public Object instantiateItem(ViewGroup collection, int position){
-    	if( position < this.getCount() - 1 ){
+    public int getCount(){
+    	if(customView == null){
+    		return mResources.size();
+    	}else{    		
+            return (mResources.size()+1);
+    	}
+    }
+
+    
+    @Override
+    public Object instantiateItem(ViewGroup collection, int position){ 
+    	int count =  this.getCount() - 1;
+    	
+    	if(customView == null){
+    		count = this.getCount();
+    	}
+    	
+    	if( position < count){
             final UrlTouchImageView iv = new UrlTouchImageView(mContext);
             iv.setUrl(mResources.get(position));
             iv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));

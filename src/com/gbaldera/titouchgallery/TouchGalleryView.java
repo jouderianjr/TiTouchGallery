@@ -121,8 +121,10 @@ public class TouchGalleryView extends TiUIView {
             }
         }
         if(d.containsKey("customView")){
-            customView = ((TiViewProxy) d.get("customView")).getOrCreateView().getNativeView();
-            mAdapter.setCustomView(customView);
+        	if(d.get("customView") != null){
+                customView = ((TiViewProxy) d.get("customView")).getOrCreateView().getNativeView();
+                mAdapter.setCustomView(customView);        		
+        	}
         }
         
         super.processProperties(d);
