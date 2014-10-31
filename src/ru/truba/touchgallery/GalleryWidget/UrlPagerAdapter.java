@@ -27,63 +27,50 @@ import java.util.List;
 
 import org.appcelerator.titanium.proxy.TiViewProxy;
 
-
 /**
- Class wraps URLs to adapter, then it instantiates {@link UrlTouchImageView} objects to paging up through them.
+ * Class wraps URLs to adapter, then it instantiates {@link UrlTouchImageView}
+ * objects to paging up through them.
  */
 public class UrlPagerAdapter extends BasePagerAdapter {
 	View customView;
 
-    public UrlPagerAdapter(Context context, List<String> resources)
-	{
+	public UrlPagerAdapter(Context context, List<String> resources) {
 		super(context, resources);
 	}
 
-    public UrlPagerAdapter(Context context, List<String> resources, View customView){
+	public UrlPagerAdapter(Context context, List<String> resources,
+			View customView) {
 		super(context, resources);
 		this.customView = customView;
 	}
-    
-    @Override
-    public void setPrimaryItem(ViewGroup container, int position, Object object) {
-        super.setPrimaryItem(container, position, object);
-        if( object instanceof UrlTouchImageView){
-            ((GalleryViewPager)container).mCurrentView = ((UrlTouchImageView)object).getImageView();        	
-        }
-    }
 
-    @Override
-    public int getCount(){
-    	if(customView == null){
-    		return mResources.size();
-    	}else{    		
-            return (mResources.size()+1);
-    	}
-    }
+	@Override
+	public void setPrimaryItem(ViewGroup container, int position, Object object) {
+		super.setPrimaryItem(container, position, object);
+		if (object instanceof UrlTouchImageView) {
+			((GalleryViewPager) container).mCurrentView = ((UrlTouchImageView) object)
+					.getImageView();
+		}
+	}
 
-    
-    @Override
-    public Object instantiateItem(ViewGroup collection, int position){ 
-    	int count =  this.getCount() - 1;
-    	
-    	if(customView == null){
-    		count = this.getCount();
-    	}
-    	
-    	if( position < count){
-            final UrlTouchImageView iv = new UrlTouchImageView(mContext);
-            iv.setUrl(mResources.get(position));
-            iv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            
-            collection.addView(iv, 0);
-            return iv;    		    		
-    	}else{
-    		collection.addView(customView,0);
-    		return customView;    			
-    	}
-    }
-    
-    public void setCustomView(View view){
-    	this.customView = view;
-    }
+	@Override
+	public Object instantiateItem(ViewGroup collection, int position) {
+		if(mResources.get(position) == ""){
+			collection.addView(customView, 0);
+			return customView;				
+		}else{
+			final UrlTouchImageView iv = new UrlTouchImageView(mContext);
+			iv.setUrl(mResources.get(position));
+			iv.setLayoutParams(new ViewGroup.LayoutParams(
+					ViewGroup.LayoutParams.MATCH_PARENT,
+					ViewGroup.LayoutParams.MATCH_PARENT));
+
+			collection.addView(iv, 0);
+			return iv;
+		}
+	}
+
+	public void setCustomView(View view) {
+		this.customView = view;
+	}
 }

@@ -71,6 +71,7 @@ public class TouchGalleryView extends TiUIView {
         viewPagerLayoutParams.width = ViewPager.LayoutParams.MATCH_PARENT;
         viewPagerLayoutParams.height = ViewPager.LayoutParams.MATCH_PARENT;
 
+
         mAdapter = new UrlPagerAdapter(mContainer.getContext(), images, customView);
         mPager = buildPager(mContainer.getContext(), mAdapter);
         mCurIndex = mAdapter.getCurrentPosition();
@@ -110,10 +111,6 @@ public class TouchGalleryView extends TiUIView {
 
     @Override
     public void processProperties(KrollDict d) {
-        if (d.containsKey(TiC.PROPERTY_IMAGES)) {
-            setImages(d.get(TiC.PROPERTY_IMAGES));
-        }
-
         if (d.containsKey(TiC.PROPERTY_CURRENT_PAGE)) {
             int page = TiConvert.toInt(d, TiC.PROPERTY_CURRENT_PAGE);
             if (page > 0) {
@@ -127,6 +124,10 @@ public class TouchGalleryView extends TiUIView {
         	}
         }
         
+        if (d.containsKey(TiC.PROPERTY_IMAGES)) {
+            setImages(d.get(TiC.PROPERTY_IMAGES));
+        }
+
         super.processProperties(d);
     }
 
@@ -157,15 +158,16 @@ public class TouchGalleryView extends TiUIView {
             }
         }
 
-        if(changed)
-        {
+        if(customView != null){
+            this.images.add("");
+        }
+        
+        if(changed){
             mAdapter.notifyDataSetChanged();
         }
     }
 
     public void setImages(Object images, int currentPage) {
-    	Log.e("SetIMAgeView", "CurrentPage ="+currentPage);
-
         boolean changed = false;
         this.images.clear();
 
@@ -181,6 +183,11 @@ public class TouchGalleryView extends TiUIView {
                 }
             }
         }
+
+        if(customView != null){
+            this.images.add("");
+        }
+        
         mAdapter.notifyDataSetChanged();
         setCurrentPage(currentPage);
         mPager.setAdapter(mAdapter);
